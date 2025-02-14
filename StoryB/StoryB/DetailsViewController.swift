@@ -9,9 +9,12 @@ import UIKit
 
 class DetailsViewController: UIViewController {
     
-    var choice:String? = nil
+    
 
     @IBOutlet weak var choiceLabel: UILabel!
+    
+    var choice:String? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
