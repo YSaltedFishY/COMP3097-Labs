@@ -24,6 +24,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate{
     @IBAction func stopLocation(_ sender: Any) {
         locationManager.stopUpdatingLocation()
     }
+    
+    var pin:MKPointAnnotation? = nil
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -66,7 +70,34 @@ class ViewController: UIViewController, CLLocationManagerDelegate{
             
             let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
             
+            
+            
             map.setRegion(region, animated: true)
+            
+            CLGeocoder().reverseGeocodeLocation(location){
+                (placemarks, error)->Void in
+                if let e = error{
+                    print(e)
+                    return
+                }
+                
+                if let placemarks = placemarks{
+                    if let p = placemarks.first{
+                        let s = "\(p.name ?? "")\n\(p.locality ?? "")"
+                        if let pin = self.pin{
+                            pin.title = s
+                        }
+                    }
+                }
+            }
+            
+            if let p = pin{
+                p.coordinate = center
+            }else{
+                pin = MKPointAnnotation()
+                pin?.coordinate = center
+                map.addAnnotation(pin!)
+            }
         } else {
             return
         }
