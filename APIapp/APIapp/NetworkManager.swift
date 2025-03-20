@@ -41,5 +41,32 @@ class NetworkManager: ObservableObject{
     }
     
     
+    func fetchTask(with id: Int, completionHandler: @escaping (ToDo?)->Void){
+        
+        let url = URL(string: address+"/\(id)")!
+        
+        let task = URLSession.shared.dataTask(with: url){
+            (data, response,error) in
+            
+            if let error = error {
+                print("Error while fetching data: \(error.localizedDescription)")
+                completionHandler(nil)
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                print ("Server side error fetching data :\(response?.description ?? "")")
+                completionHandler(nil)
+                return
+            }
+            
+            if let data = data{
+                let res = try? JSONDecoder().decode(ToDo.self, from: data)
+                completionHandler(res ?? nil)
+            }
+        }
+        task.resume()
+    }
+    
+    
     
 }
