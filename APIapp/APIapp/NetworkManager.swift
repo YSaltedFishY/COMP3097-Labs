@@ -12,7 +12,8 @@ class NetworkManager: ObservableObject{
     
     let address = "https://jsonplaceholder.typicode.com/todos"
     
-    func fetchAllTasks(){
+    //
+    func fetchAllTasks(completionHandler: @escaping ([ToDo])->Void){
         
         let url = URL(string: address)!
         
@@ -21,20 +22,24 @@ class NetworkManager: ObservableObject{
             
             if let error = error {
                 print("Error while fetching data: \(error.localizedDescription)")
+                completionHandler([])
             }
             
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                print ("Server side error fetching data :\(response)")
+                print ("Server side error fetching data :\(response?.description ?? "")")
+                completionHandler([])
                 return
             }
             
             if let data = data{
                 let res = try? JSONDecoder().decode([ToDo].self, from: data)
                 self.todos = res ?? []
+                completionHandler(res ?? [])
             }
         }
-        
+        task.resume()
     }
+    
     
     
 }

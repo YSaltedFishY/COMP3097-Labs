@@ -8,12 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var nm = NetworkManager()
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            
+            
+            List(nm.todos){
+                todo in
+                Text(todo.title)
+            }.onAppear(){
+                nm.fetchAllTasks(completionHandler: {
+                    tasks in
+                    print("got data")
+                })
+            }
         }
         .padding()
     }
